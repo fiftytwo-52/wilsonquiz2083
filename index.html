@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <link rel="icon" href="data:," />
+      <link href="fonts/fonts.css" rel="stylesheet">
+  <title>Wilson Science Quiz</title>
+  <style>
+    :root{
+      color-scheme:light;
+      --ink:#12345b;--muted:#56728f;--surface:#f6fbff;--panel:#ffffff;--panel-2:#eaf6ff;
+      --line:rgba(8,78,145,.16);--blue:#0868c8;--blue-2:#18a6df;--deep:#064e96;--cyan:#1ab9dc;
+      --gold:#ffd65a;--gold-2:#e6ad20;--danger:#d83b54;--ok:#168563;--shadow:0 18px 45px rgba(18,84,145,.14);
+      --round:#0b74cf;--round-rgb:11,116,207;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--surface);color:var(--ink);font-family:"Nunito",ui-rounded,system-ui,sans-serif;overflow-x:hidden}
+    button,a{font:inherit}
+    button{color:inherit}
+    .app{min-height:100dvh;position:relative;overflow:hidden;background:
+      radial-gradient(circle at 8% 18%,rgba(255,195,51,.2),transparent 25rem),
+      radial-gradient(circle at 92% 14%,rgba(224,76,128,.14),transparent 24rem),
+      radial-gradient(circle at 84% 88%,rgba(33,190,145,.16),transparent 28rem),
+      radial-gradient(circle at 20% 84%,rgba(var(--round-rgb),.15),transparent 30rem),
+      linear-gradient(145deg,var(--surface),color-mix(in srgb,var(--surface) 86%,var(--blue) 14%));
+      transition:background .5s ease}
+    .ambient{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+    .orb{position:absolute;border:2px solid rgba(var(--round-rgb),.24);border-radius:50%;animation:drift 16s ease-in-out infinite}
+    .orb:nth-child(1){width:220px;height:220px;left:-80px;top:15%;animation-delay:-3s;border-color:rgba(255,182,24,.32);background:rgba(255,220,104,.05)}
+    .orb:nth-child(2){width:110px;height:110px;right:8%;top:10%;animation-delay:-8s;border-color:rgba(218,58,119,.28);background:rgba(246,112,163,.05)}
+    .orb:nth-child(3){width:330px;height:330px;right:-150px;bottom:-90px;animation-delay:-11s;border-color:rgba(20,171,128,.26);background:rgba(57,202,160,.05)}
+    .spark{position:absolute;width:6px;height:6px;background:rgba(var(--round-rgb),.35);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:twinkle 5s ease-in-out infinite}
+    .spark.s1{left:18%;top:16%}.spark.s2{left:83%;top:42%;animation-delay:-2s}.spark.s3{left:65%;top:80%;animation-delay:-3.7s}
+    .science-float{position:absolute;color:rgba(var(--round-rgb),.2);font-size:clamp(2.4rem,5vw,5rem);font-weight:900;line-height:1;animation:scienceDrift 14s ease-in-out infinite;filter:drop-shadow(0 8px 18px rgba(var(--round-rgb),.08))}
+    .science-float.f1{left:6%;top:62%;animation-delay:-2s}.science-float.f2{left:29%;top:9%;animation-delay:-9s;font-size:clamp(1.8rem,3vw,3rem)}.science-float.f3{right:6%;top:18%;animation-delay:-5s}.science-float.f4{right:25%;bottom:8%;animation-delay:-12s;font-size:clamp(2rem,4vw,4rem)}
+    .sticker-layer{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+    .fun-sticker{position:absolute;left:var(--x);top:var(--y);font-size:clamp(3.6rem,9vw,7.5rem);line-height:1;filter:drop-shadow(0 12px 14px rgba(7,50,90,.22));animation:stickerPop 1.35s cubic-bezier(.16,.8,.3,1) forwards;will-change:transform,opacity}
+    @keyframes drift{0%,100%{transform:translate3d(0,0,0) rotate(0)}50%{transform:translate3d(18px,-24px,0) rotate(12deg)}}
+    @keyframes twinkle{0%,100%{transform:scale(.5) rotate(0);opacity:.25}50%{transform:scale(1.7) rotate(80deg);opacity:.9}}
+    @keyframes scienceDrift{0%,100%{transform:translate3d(0,0,0) rotate(-8deg);opacity:.45}50%{transform:translate3d(30px,-34px,0) rotate(10deg);opacity:1}}
+    @keyframes stickerPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.25) rotate(-18deg)}28%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(8deg)}68%{opacity:1;transform:translate(-50%,-75%) scale(1) rotate(-4deg)}100%{opacity:0;transform:translate(-50%,-145%) scale(.8) rotate(12deg)}}
+    .screen{position:relative;z-index:2;display:none;min-height:100dvh;width:100%;animation:screenIn .42s cubic-bezier(.2,.8,.2,1)}
+    .screen.active{display:flex}
+    @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    /* Entry */
+    #entry{align-items:center;justify-content:center;padding:clamp(12px,2.5vw,32px);text-align:center;background:linear-gradient(150deg,#dff5ff 0%,#bfe8ff 48%,#dff9ee 100%);color:var(--ink);isolation:isolate}
+    #entry:after{content:"";position:absolute;inset:0;z-index:-2;background-image:radial-gradient(circle,rgba(9,103,192,.16) 2px,transparent 2px),linear-gradient(rgba(255,255,255,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.28) 1px,transparent 1px);background-size:32px 32px,64px 64px,64px 64px;animation:gridMove 18s linear infinite}
+    .curtain{position:absolute;inset-block:0;width:51%;z-index:-1;background:
+      radial-gradient(circle at 22px 22px,rgba(255,214,90,.7) 0 5px,transparent 6px),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 8%,rgba(4,60,132,.08) 11% 17%),
+      linear-gradient(145deg,#52b7f3,#1782d4 70%,#0c67ba);background-size:44px 44px,auto,auto;box-shadow:inset 0 0 55px rgba(6,74,145,.22);transition:transform 1.15s cubic-bezier(.75,0,.2,1);animation:curtainGlow 4s ease-in-out infinite alternate}
+    .curtain.left{left:0;border-right:4px solid var(--gold);transform-origin:left}
+    .curtain.right{right:0;border-left:4px solid var(--gold);transform-origin:right;animation-delay:-2s}
+    #entry.opening .curtain.left{transform:translateX(-102%)}
+    #entry.opening .curtain.right{transform:translateX(102%)}
+    #entry.opening .entry-card{opacity:0;transform:scale(1.08);transition:.75s ease}
+    .entry-card{width:100%;min-height:calc(100dvh - clamp(24px,5vw,64px));position:relative;padding:clamp(28px,5vw,76px);border:3px solid #fff;background:rgba(255,255,255,.94);box-shadow:0 25px 70px rgba(14,93,158,.22);border-radius:34px;backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:entryCardIn .8s cubic-bezier(.2,.85,.2,1) both}
+    .entry-card:before,.entry-card:after{content:"";position:absolute;width:28px;height:28px;border:7px solid var(--gold);transform:rotate(45deg);opacity:.9;animation:diamondTurn 5s ease-in-out infinite}.entry-card:before{left:34px;top:34px}.entry-card:after{right:34px;bottom:34px;border-color:#46caa0;animation-delay:-2.5s}
+    .school-logo{width:clamp(150px,18vw,220px);max-height:210px;object-fit:contain;filter:drop-shadow(0 12px 18px rgba(20,85,135,.18));margin-bottom:24px;animation:logoFloat 3.6s ease-in-out infinite}
+    h1{font-family:"Nunito",ui-rounded,sans-serif;font-weight:900;font-size:clamp(2.8rem,6.4vw,6.3rem);line-height:1;letter-spacing:-.035em;margin:12px auto 38px;max-width:940px;color:#074d91}
+    @keyframes entryCardIn{from{opacity:0;transform:scale(.94) translateY(18px)}to{opacity:1;transform:none}}
+    @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+    @keyframes diamondTurn{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(135deg) scale(1.12)}}
+    @keyframes curtainGlow{from{filter:saturate(.95) brightness(.98)}to{filter:saturate(1.12) brightness(1.05)}}
+    @keyframes gridMove{to{background-position:32px 32px,64px 64px,64px 64px}}
+    .primary{border:0;border-radius:999px;background:linear-gradient(180deg,#ffdd6b,#ffc83f);color:#173454;font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:900;padding:16px 32px;min-height:60px;cursor:pointer;box-shadow:0 8px 0 #d49a16,0 15px 28px rgba(26,92,145,.2);transition:transform .18s,box-shadow .18s;display:inline-flex;align-items:center;gap:10px;justify-content:center}
+    .primary:hover{transform:translateY(-2px);box-shadow:0 10px 0 #d49a16,0 18px 34px rgba(26,92,145,.24)}.primary:active{transform:translateY(6px);box-shadow:0 2px 0 #d49a16}
+    .primary svg{width:20px;height:20px}
+    .entry-note{margin:20px 0 0;color:#587694;font-size:.9rem;font-weight:700}
+
+    /* Quiz level */
+    #levels{background:transparent}
+    .level-wrap{flex:1;display:grid;align-items:center;padding-bottom:3vh}
+    .level-panel{width:100%;text-align:center}
+    .level-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:34px;text-align:left}
+    .level-card{position:relative;min-height:250px;border:2px solid rgba(var(--level-rgb),.32);border-radius:30px;background:linear-gradient(145deg,var(--panel) 32%,rgba(var(--level-rgb),.16));padding:30px;cursor:pointer;overflow:hidden;box-shadow:0 10px 0 rgba(var(--level-rgb),.14),0 20px 40px rgba(14,78,136,.1);transition:transform .2s,border-color .2s,box-shadow .2s}
+    .level-card:hover{transform:translateY(-5px);border-color:rgba(var(--level-rgb),.7);box-shadow:0 14px 0 rgba(var(--level-rgb),.16),0 24px 44px rgba(var(--level-rgb),.16)}
+    .level-card:after{content:"";position:absolute;width:180px;height:180px;border:26px solid rgba(var(--level-rgb),.07);border-radius:50%;right:-76px;bottom:-82px}
+    .level-badge{display:inline-grid;place-items:center;width:62px;height:62px;border-radius:20px;background:rgba(var(--level-rgb),.13);color:rgb(var(--level-rgb));font-size:1.7rem;font-weight:900;margin-bottom:28px}
+    .level-card h3{font-size:clamp(1.7rem,3vw,2.4rem);margin:0 0 9px;color:var(--ink)}
+    .level-card p{margin:0;color:var(--muted);font-size:1.08rem;font-weight:800;max-width:300px}
+    .coming-note{display:none;margin:26px auto 0;max-width:620px;padding:18px 22px;border-radius:18px;background:#fff6cf;border:2px solid #f3d66b;color:#68520a;font-weight:800;animation:answerIn .3s ease}
+    .coming-note.show{display:block}
+
+    /* Shared headers */
+    .inner{width:100%;margin:0;padding:clamp(16px,2.2vw,34px);display:flex;flex-direction:column;min-height:100dvh}
+    .topline{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:clamp(24px,4vh,48px)}
+    .context{display:flex;align-items:center;gap:14px;min-width:0}
+    .context-mark{width:42px;height:42px;border-radius:12px;background:rgba(var(--round-rgb),.14);border:1px solid rgba(var(--round-rgb),.28);display:grid;place-items:center;color:rgb(var(--round-rgb));font-weight:800}
+    .context-copy{min-width:0}.context-copy strong{display:block;font-size:1.16rem}.context-copy span{color:var(--muted);font-size:.96rem;font-weight:700}
+    .ghost{border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 82%,transparent);border-radius:12px;padding:11px 16px;min-height:48px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:1rem;font-weight:800;transition:background .2s,border-color .2s;white-space:nowrap}
+    .ghost:hover{background:var(--panel-2);border-color:rgba(var(--round-rgb),.4)}
+    .ghost svg,.control svg{width:18px;height:18px;flex:0 0 auto}
+    .section-kicker{color:rgb(var(--round-rgb));font-weight:900;letter-spacing:.1em;text-transform:uppercase;font-size:.9rem;margin:0 0 9px}
+    .section-title{font-family:"Nunito",ui-rounded,sans-serif;font-weight:900;font-size:clamp(2.5rem,4.8vw,4.8rem);line-height:1.04;margin:0;letter-spacing:-.02em}
+    .section-lede{margin:14px 0 0;color:var(--muted);font-size:clamp(1.08rem,1.6vw,1.32rem);font-weight:700}
+
+    /* Rounds */
+    #rounds{background:transparent}
+    .rounds-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;margin-bottom:28px}
+    .round-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(190px,1fr);gap:clamp(28px,3vw,42px);flex:1;align-content:stretch;padding:8px 2px 34px}
+    .round-card{position:relative;min-height:190px;text-align:left;border:2px solid rgba(var(--accent-rgb),.32);background:linear-gradient(145deg,var(--panel) 28%,rgba(var(--accent-rgb),.17));border-radius:24px;padding:24px;cursor:pointer;overflow:hidden;box-shadow:0 10px 0 rgba(var(--accent-rgb),.14),0 18px 32px rgba(4,45,92,.09);transition:transform .22s,border-color .22s,box-shadow .22s}
+    .round-card:hover{transform:translateY(-5px);border-color:rgba(var(--accent-rgb),.72);box-shadow:0 14px 0 rgba(var(--accent-rgb),.16),0 22px 38px rgba(var(--accent-rgb),.18)}
+    .round-card:after{content:"";position:absolute;width:110px;height:110px;border:22px solid rgba(var(--accent-rgb),.07);border-radius:50%;right:-45px;bottom:-48px}
+    .round-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(145deg,rgba(var(--accent-rgb),.25),rgba(var(--accent-rgb),.1));color:rgb(var(--accent-rgb));display:grid;place-items:center;margin-bottom:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
+    .round-icon svg{width:25px;height:25px}
+    .round-card h3{margin:0 0 7px;font-size:1.28rem;line-height:1.12}.round-card p{margin:0;color:var(--muted);font-size:1rem;font-weight:700;line-height:1.35}
+    .round-count{position:absolute;right:14px;top:14px;font-weight:900;color:rgba(var(--accent-rgb),.8);font-size:.88rem}
+
+    /* Question selection */
+    #menu{background:transparent}
+    .menu-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,300px);gap:clamp(22px,3vw,44px);align-items:start;flex:1}
+    .number-grid{display:grid;grid-template-columns:repeat(4,minmax(80px,1fr));gap:clamp(20px,2vw,30px);margin-top:38px;padding:4px 2px 34px}
+    .number-grid.rapid-grid{grid-template-columns:repeat(5,minmax(72px,1fr))}
+    .set-heading{grid-column:1/-1;margin:12px 0 0;padding:10px 14px;border-radius:14px;background:rgba(var(--round-rgb),.1);color:rgb(var(--round-rgb));font-size:.84rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    .set-heading:first-child{margin-top:0}
+    .rapid-set-grid{grid-template-columns:repeat(2,minmax(180px,1fr));gap:clamp(24px,3vw,40px)}
+    .rapid-set{--tile-rgb:230,112,19;min-height:180px;border:2px solid rgba(var(--tile-rgb),.34);border-radius:22px;background:linear-gradient(145deg,var(--panel) 20%,rgba(var(--tile-rgb),.2));cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;box-shadow:0 9px 0 rgba(var(--tile-rgb),.14),0 18px 30px rgba(2,42,86,.09);transition:transform .2s,border-color .2s}
+    .rapid-set:hover{transform:translateY(-5px);border-color:rgba(var(--tile-rgb),.78)}
+    .rapid-set strong{font-size:clamp(2rem,4vw,3.4rem);font-weight:900;line-height:1}.rapid-set span{font-size:1rem;color:var(--muted);font-weight:800}
+    .stage.rapid-wait{grid-template-columns:1fr}.stage.rapid-wait .question-label,.stage.rapid-wait .timer-side{display:none}.stage.rapid-wait .stage-main{min-height:54vh}
+    .rapid-question-list,.rapid-answer-list{display:none}
+    .stage.rapid-mode .stage-main{justify-content:flex-start;padding:clamp(18px,2.3vw,34px)}
+    .stage.rapid-mode .question-text,.stage.rapid-mode .visual-wrap,.stage.rapid-mode .answer-panel{display:none!important}
+    .stage.rapid-mode:not(.rapid-wait) .rapid-question-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.5vw,20px)}
+    .rapid-question{display:grid;grid-template-columns:46px minmax(0,1fr);gap:14px;align-items:start;padding:clamp(15px,1.8vw,23px);border-radius:16px;background:rgba(var(--round-rgb),.075);border:1px solid rgba(var(--round-rgb),.2);animation:answerIn .28s ease}
+    .rapid-number{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgb(var(--round-rgb));color:#fff;font-weight:900;font-size:1.08rem}
+    .rapid-question p{margin:2px 0 0;font-size:clamp(1.22rem,1.75vw,1.75rem);font-weight:800;line-height:1.25}
+    .stage.rapid-mode.rapid-answers{grid-template-columns:1fr}
+    .stage.rapid-mode.rapid-answers .timer-side,.stage.rapid-mode.rapid-answers .rapid-question-list{display:none}
+    .stage.rapid-mode.rapid-answers .rapid-answer-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.5vw,20px)}
+    .rapid-answer-item{padding:clamp(15px,1.8vw,23px);border-radius:16px;background:linear-gradient(145deg,var(--panel),rgba(var(--round-rgb),.1));border:1px solid rgba(var(--round-rgb),.25);animation:answerIn .3s ease}
+    .rapid-answer-item .rapid-q{display:flex;gap:10px;align-items:flex-start;font-size:clamp(1.05rem,1.35vw,1.32rem);font-weight:800;line-height:1.3}
+    .rapid-answer-item .rapid-q b{color:rgb(var(--round-rgb));flex:0 0 auto}
+    .rapid-answer-item .rapid-a{margin:10px 0 0;padding-top:10px;border-top:1px solid rgba(var(--round-rgb),.2);font-size:clamp(1.16rem,1.55vw,1.52rem);font-weight:900;line-height:1.25;color:rgb(var(--round-rgb))}
+    .q-number{--tile-rgb:11,116,207;aspect-ratio:1.18;border:2px solid rgba(var(--tile-rgb),.3);border-radius:20px;background:linear-gradient(150deg,var(--panel) 18%,rgba(var(--tile-rgb),.18));position:relative;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;box-shadow:0 8px 0 rgba(var(--tile-rgb),.13),0 14px 24px rgba(2,42,86,.08);transition:transform .2s,border-color .2s,background .2s,filter .2s}
+    .q-number:nth-of-type(6n+1){--tile-rgb:16,142,107}.q-number:nth-of-type(6n+2){--tile-rgb:20,104,218}.q-number:nth-of-type(6n+3){--tile-rgb:214,99,42}.q-number:nth-of-type(6n+4){--tile-rgb:130,75,188}.q-number:nth-of-type(6n+5){--tile-rgb:205,48,71}.q-number:nth-of-type(6n){--tile-rgb:11,126,153}
+    .q-number:hover{transform:translateY(-4px);border-color:rgba(var(--tile-rgb),.75);background:rgba(var(--tile-rgb),.2)}
+    .q-number.viewed{background:#dfe5eb;border-color:#c5ced7;color:#758392;box-shadow:0 5px 0 #cbd3db;filter:grayscale(1)}
+    .q-number.viewed:before{content:"Seen";position:absolute;top:7px;right:7px;padding:3px 7px;border-radius:999px;background:#758392;color:#fff;font-size:.8rem;font-weight:900;letter-spacing:.03em}
+    .q-number strong{font-family:"Nunito",ui-rounded,sans-serif;font-size:clamp(2.1rem,4vw,3.3rem);line-height:.86;font-weight:900}.q-number span{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}
+    .round-aside{position:sticky;top:24px;background:linear-gradient(160deg,rgb(var(--round-rgb)),color-mix(in srgb,rgb(var(--round-rgb)) 60%,#041a3a));color:white;border-radius:22px;padding:26px;min-height:350px;box-shadow:var(--shadow);overflow:hidden}
+    .round-aside:before{content:"";position:absolute;width:240px;height:240px;border:1px solid rgba(255,255,255,.16);border-radius:50%;right:-120px;bottom:-80px;box-shadow:0 0 0 38px rgba(255,255,255,.04)}
+    .aside-icon{width:66px;height:66px;border-radius:20px;background:rgba(255,255,255,.15);display:grid;place-items:center;margin-bottom:24px}.aside-icon svg{width:35px;height:35px}
+    .round-aside h3{font-family:"Nunito",ui-rounded,sans-serif;font-size:2.15rem;font-weight:900;margin:0 0 12px}.round-aside p{margin:0;color:rgba(255,255,255,.9);max-width:240px;font-size:1.02rem;font-weight:700;line-height:1.45}
+    .legend{display:flex;align-items:center;gap:9px;margin-top:32px;font-size:.92rem;font-weight:800}.legend i{width:14px;height:14px;border-radius:4px;background:#aeb8c2}
+
+    /* Question stage */
+    #question{background:transparent}
+    .question-inner{width:100%;margin:0;padding:clamp(10px,1.6vw,24px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(10px,1.6vh,18px);min-height:100dvh}
+    .q-top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}
+    .q-top .ghost:last-child{justify-self:end}.q-id{text-align:center}.q-id strong{display:block;font-size:1.16rem}.q-id span{font-size:1rem;color:var(--muted);font-weight:700}
+    .stage{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 230px;overflow:hidden;position:relative}
+    .stage-main{padding:clamp(22px,3vw,46px);display:flex;flex-direction:column;justify-content:center;min-width:0}
+    .question-label{display:flex;align-items:center;gap:10px;color:rgb(var(--round-rgb));font-size:1rem;text-transform:uppercase;letter-spacing:.1em;font-weight:900;margin-bottom:18px}
+    .question-label:before{content:"";width:26px;height:2px;background:rgb(var(--round-rgb))}
+    .question-text{font-family:"Nunito",ui-rounded,sans-serif;font-size:clamp(2rem,4.25vw,5.3rem);line-height:1.03;letter-spacing:-.025em;margin:0;max-width:none;font-weight:400;text-wrap:balance}
+    .visual-wrap{margin-top:24px;display:none;max-height:min(38vh,360px);min-height:180px;border-radius:16px;overflow:hidden;background:#dce9f5;border:1px solid var(--line);position:relative}
+    .visual-wrap.show{display:flex;align-items:center;justify-content:center}.visual-wrap img{width:100%;height:100%;max-height:min(38vh,360px);object-fit:contain;background:white}
+    .visual-placeholder{width:100%;min-height:210px;display:grid;place-items:center;text-align:center;padding:28px;background:repeating-linear-gradient(135deg,#edf5fb 0 18px,#e3eef7 18px 36px);color:var(--muted);font-weight:900;font-size:clamp(1rem,2vw,1.35rem);letter-spacing:.04em}
+    .paramecium{width:100%;height:100%;min-height:210px;background:radial-gradient(circle at center,#c6eff7,#73bed1);position:relative;overflow:hidden}
+    .paramecium:after{content:"";position:absolute;width:160px;height:75px;border-radius:56% 44% 51% 49%;background:radial-gradient(circle at 62% 50%,#8b2b8c 0 9px,transparent 10px),radial-gradient(circle at 38% 35%,#72a337 0 8px,transparent 9px),rgba(240,226,105,.82);border:4px dotted rgba(70,78,35,.8);left:calc(50% - 80px);top:calc(50% - 38px);transform:rotate(-12deg);box-shadow:0 0 0 6px rgba(255,255,255,.38);animation:swim 6s ease-in-out infinite}
+    .paramecium:before{content:"";position:absolute;width:80px;height:80px;border:2px solid rgba(255,255,255,.55);border-radius:50%;left:12%;top:20%;box-shadow:220px 80px 0 -20px rgba(255,255,255,.35),410px -25px 0 -8px rgba(255,255,255,.25)}
+    @keyframes swim{0%,100%{transform:translate(-70px,15px) rotate(-12deg)}50%{transform:translate(80px,-25px) rotate(14deg)}}
+    .visual-source{position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(3,24,49,.82);color:#fff;text-decoration:none;padding:8px 12px;border-radius:999px;font-size:.78rem;font-weight:700}
+    .answer-panel{margin-top:clamp(20px,4vh,40px);padding:18px 20px;background:rgba(var(--round-rgb),.1);border:1px solid rgba(var(--round-rgb),.25);border-radius:14px;display:none;align-items:baseline;gap:12px;animation:answerIn .3s ease}
+    .answer-panel.show{display:flex}.answer-panel span{font-size:1rem;letter-spacing:.1em;text-transform:uppercase;font-weight:900;color:rgb(var(--round-rgb));flex:0 0 auto}.answer-panel strong{font-size:clamp(1.5rem,2.7vw,2.55rem);line-height:1.2}
+    @keyframes answerIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .timer-side{background:linear-gradient(180deg,rgba(var(--round-rgb),.12),rgba(var(--round-rgb),.03));border-left:1px solid var(--line);padding:28px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+    .timer-ring{position:relative;width:160px;height:160px}.timer-ring svg{width:100%;height:100%;transform:rotate(-90deg)}.timer-ring circle{fill:none;stroke-width:10}.timer-track{stroke:rgba(var(--round-rgb),.14)}.timer-progress{stroke:rgb(var(--round-rgb));stroke-linecap:round;transition:stroke-dashoffset .25s linear,stroke .25s}.timer-progress.warning{stroke:var(--danger)}
+    .time-value{position:absolute;inset:0;display:grid;place-items:center;text-align:center}.time-value strong{display:block;font-family:"Nunito",ui-rounded,sans-serif;font-weight:900;font-size:3.1rem;line-height:.85}.time-value span{font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:900}
+    .timer-state{font-weight:900;color:var(--muted);font-size:1rem;text-transform:uppercase;letter-spacing:.07em;min-height:22px}.timer-state.done{color:var(--danger)}
+    .stage.timeup:after{content:"TIME’S UP";position:absolute;left:50%;top:18px;transform:translateX(-50%);background:var(--danger);color:white;border-radius:999px;padding:8px 18px;font-size:.76rem;letter-spacing:.14em;font-weight:800;box-shadow:0 9px 30px color-mix(in srgb,var(--danger) 35%,transparent);animation:pulse .8s ease 2}
+    @keyframes pulse{50%{transform:translateX(-50%) scale(1.08)}}
+    .controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.control-group{display:flex;gap:10px;flex-wrap:wrap}
+    .control{min-height:48px;border:1px solid var(--line);background:var(--panel);border-radius:13px;padding:11px 15px;cursor:pointer;font-weight:800;display:inline-flex;align-items:center;gap:8px;box-shadow:0 6px 15px rgba(3,34,70,.06);transition:background .18s,border-color .18s}
+    .control:hover{background:var(--panel-2);border-color:rgba(var(--round-rgb),.45)}.control.answer{background:rgb(var(--round-rgb));color:white;border-color:transparent}.control:disabled{opacity:.35;cursor:not-allowed}
+    .shortcut{font-size:1rem;color:var(--muted);font-weight:700;margin-left:auto}.key{display:inline-grid;place-items:center;min-width:27px;height:27px;padding:0 5px;border-radius:5px;border:1px solid var(--line);background:var(--panel);font-size:.86rem;font-weight:900;margin:0 2px}
+
+    @media(max-width:1050px){.round-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.stage{grid-template-columns:minmax(0,1fr) 190px}.timer-ring{width:130px;height:130px}}
+    @media(max-width:760px){
+      .inner{padding:18px}.topline{margin-bottom:26px}.level-grid{grid-template-columns:1fr;gap:20px;margin-top:28px}.level-card{min-height:205px}.rounds-head{grid-template-columns:1fr}.round-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(154px,auto);gap:22px 18px;padding-bottom:28px}.round-card{min-height:154px;padding:17px}.round-card h3{font-size:1.05rem}.round-icon{width:48px;height:48px;margin-bottom:15px}
+      .menu-layout{grid-template-columns:1fr}.round-aside{display:none}.number-grid,.number-grid.rapid-grid{grid-template-columns:repeat(3,1fr);gap:16px 14px;margin-top:30px}.number-grid.rapid-set-grid{grid-template-columns:repeat(2,1fr);gap:22px 16px}.rapid-set{min-height:150px}.q-number{border-radius:14px}.q-number strong{font-size:2.2rem}
+      .question-inner{padding:10px;gap:10px}.q-top{grid-template-columns:auto 1fr auto}.q-top .ghost span{display:none}.q-id{text-align:left}.stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.stage-main{padding:24px 20px;justify-content:flex-start}.question-text{font-size:clamp(1.9rem,8.3vw,3.3rem)}.timer-side{border-left:0;border-top:1px solid var(--line);padding:12px 16px;flex-direction:row;justify-content:space-between}.timer-ring{width:82px;height:82px}.time-value strong{font-size:2rem}.time-value span{font-size:.75rem}.timer-state{margin-right:auto;font-size:.9rem}.visual-wrap{min-height:170px;max-height:250px}.visual-wrap img{max-height:250px}.answer-panel{padding:14px;flex-direction:column;gap:3px}.stage.rapid-mode:not(.rapid-wait) .rapid-question-list,.stage.rapid-mode.rapid-answers .rapid-answer-list{grid-template-columns:1fr}.rapid-question{grid-template-columns:40px minmax(0,1fr);gap:11px;padding:14px}.rapid-number{width:38px;height:38px}.rapid-question p{font-size:1.18rem}.rapid-answer-item{padding:14px}.controls{padding-bottom:max(0px,env(safe-area-inset-bottom))}.shortcut{display:none}.control{padding:10px 12px;min-height:44px}.control span.long{display:none}
+    }
+    @media(max-width:430px){.entry-card{padding:26px 18px}.school-logo{width:125px}.level-grid{grid-template-columns:1fr}.level-card{min-height:190px;padding:22px}.level-badge{margin-bottom:18px}.round-grid{grid-template-columns:repeat(2,1fr)}.round-card{min-height:136px}.round-card p{display:none}.number-grid{grid-template-columns:repeat(3,1fr)}.stage-main{padding:22px 18px}.q-top .ghost{padding:9px 10px}.control-group{gap:7px}.control{font-size:1rem}}
+
+    /* Keep essential labels readable on projectors and narrow screens. */
+    .entry-note,.context-copy span,.section-kicker,.round-count,.set-heading,
+    .q-number.viewed:before,.q-number span,.legend,.visual-source,
+    .time-value span,.timer-state,.stage.timeup:after,.key{font-size:1rem}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="ambient" aria-hidden="true"><i class="orb"></i><i class="orb"></i><i class="orb"></i><i class="spark s1"></i><i class="spark s2"></i><i class="spark s3"></i><span class="science-float f1">⚛</span><span class="science-float f2">✦</span><span class="science-float f3">⌬</span><span class="science-float f4">⚗</span></div>
+  <div class="sticker-layer" id="stickerLayer" aria-hidden="true"></div>
+
+  <section class="screen active" id="entry" aria-labelledby="entryTitle">
+    <div class="curtain left"></div><div class="curtain right"></div>
+    <div class="entry-card">
+      <img class="school-logo" src="logo.png" alt="Wilson Academy crest">
+      <h1 id="entryTitle">Wilson Science Quiz 2083</h1>
+      <button class="primary" id="enterBtn">Enter Quiz <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+  </section>
+
+  <section class="screen" id="levels" aria-labelledby="levelsTitle">
+    <div class="inner">
+      <header class="topline">
+        <div class="context"><div class="context-mark">WA</div><div class="context-copy"><strong>Wilson Science Quiz</strong></div></div>
+        <button class="ghost" data-go-entry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h18M9 6l-6 6 6 6"/></svg> Entry screen</button>
+      </header>
+      <div class="level-wrap">
+        <div class="level-panel">
+          <h2 class="section-title" id="levelsTitle">Select the program</h2>
+          <div class="level-grid">
+            <button class="level-card" id="juniorBtn" style="--level-rgb:20,142,107"><span class="level-badge">J</span><h3>Junior Quiz</h3><p>80 questions · 8 rounds</p></button>
+            <button class="level-card" id="seniorBtn" style="--level-rgb:230,112,19"><span class="level-badge">S</span><h3>Senior Quiz</h3><p>101 questions · 8 rounds</p></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="rounds" aria-labelledby="roundsTitle">
+    <div class="inner">
+      <header class="topline">
+        <div class="context"><div class="context-mark">WA</div><div class="context-copy"><strong>Wilson Science Quiz</strong><span id="competitionLabel">Junior competition</span></div></div>
+        <button class="ghost" id="backLevels"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12h18M9 6l-6 6 6 6"/></svg> Quiz levels</button>
+      </header>
+      <div class="rounds-head">
+        <div><h2 class="section-title" id="roundsTitle">Select round</h2></div>
+        <div class="context-copy"><strong id="questionTotal">80 questions</strong><span id="roundTotal">8 round groups in total</span></div>
+      </div>
+      <div class="round-grid" id="roundGrid"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="menu" aria-labelledby="menuTitle">
+    <div class="inner">
+      <header class="topline">
+        <button class="ghost" id="backRounds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> All rounds</button>
+        <button class="ghost" data-go-entry>Entry screen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </header>
+      <div class="menu-layout">
+        <div>
+          <h2 class="section-title" id="menuTitle">Choose your question</h2>
+          <p class="section-lede" id="menuLede">The timer starts when a question opens.</p>
+          <div class="number-grid" id="numberGrid"></div>
+        </div>
+        <aside class="round-aside" id="roundAside"><div class="aside-icon" id="asideIcon"></div><h3 id="asideTitle"></h3><p id="asideCopy"></p><div class="legend"><i></i> Gray tile = already visited</div></aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="question" aria-labelledby="questionText">
+    <div class="question-inner">
+      <header class="q-top">
+        <button class="ghost" id="backMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>Question board</span></button>
+        <div class="q-id"><strong id="qRound"></strong><span id="qNumber"></span></div>
+        <button class="ghost" data-go-entry><span>Entry screen</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </header>
+      <article class="stage" id="stage">
+        <div class="stage-main">
+          <div class="question-label" id="questionLabel">Question</div>
+          <h2 class="question-text" id="questionText"></h2>
+          <div class="rapid-question-list" id="rapidQuestionList" aria-live="polite"></div>
+          <div class="rapid-answer-list" id="rapidAnswerList"></div>
+          <div class="visual-wrap" id="visualWrap"></div>
+          <div class="answer-panel" id="answerPanel"><span>Answer</span><strong id="answerText"></strong></div>
+        </div>
+        <aside class="timer-side" aria-label="Question timer">
+          <div class="timer-ring">
+            <svg viewBox="0 0 180 180" aria-hidden="true"><circle class="timer-track" cx="90" cy="90" r="76"></circle><circle class="timer-progress" id="timerProgress" cx="90" cy="90" r="76"></circle></svg>
+            <div class="time-value"><div><strong id="timeValue">60</strong><span>seconds</span></div></div>
+          </div>
+          <div class="timer-state" id="timerState" aria-live="polite">Timer running</div>
+        </aside>
+      </article>
+      <footer class="controls">
+        <div class="control-group">
+          <button class="control" id="prevBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg> Previous</button>
+          <button class="control" id="timerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg><span id="timerBtnText">Pause</span></button>
+          <button class="control" id="restartBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg><span class="long">Restart </span>60s</button>
+        </div>
+        <button class="control answer" id="answerBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/></svg><span id="answerBtnText">Show answer</span></button>
+        <div class="control-group">
+          <button class="control" id="nextBtn">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <div class="shortcut"><span class="key">A</span> answer <span class="key">Space</span> sticker <span class="key">R</span> restart</div>
+      </footer>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const icons={
+    biology:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 3C11 4 5 8 5 14c0 4 3 6 6 6 6 0 9-7 8-17Z"/><path d="M5 21c2-6 6-10 12-14"/></svg>',
+    physics:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="12" rx="10" ry="4.5"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(120 12 12)"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+    chemistry:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 16h9"/></svg>',
+    visual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3V9Z"/></svg>',
+    gambling:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="15" cy="15" r="1" fill="currentColor"/><circle cx="15" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="15" r="1" fill="currentColor"/></svg>',
+    astronomy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-20 12 12)"/><path d="M5 4h.01M19 19h.01"/></svg>',
+    misc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v5M12 17v5M4.9 4.9l3.5 3.5M15.6 15.6l3.5 3.5M2 12h5M17 12h5M4.9 19.1l3.5-3.5M15.6 8.4l3.5-3.5"/><circle cx="12" cy="12" r="3"/></svg>',
+    rapid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"/></svg>'
+  };
+  const juniorRounds=[
+    {id:'biology',name:'Biology',short:'Living systems',icon:'biology',rgb:'16,142,107',qs:[
+      ['Which structure provides rigidity to plant cells?','Cell wall'],
+      ['Which tissue transports water upward in plants?','Xylem'],
+      ['Which vitamin deficiency causes rickets (weak bones)?','Vitamin D'],
+      ['Which organ helps humans breathe?','Lungs'],
+      ['Which type of root system do dicotyledonous plants have?','Tap root system'],
+      ['Which acid is present in lemon?','Citric acid'],
+      ['Which part of a plant absorbs water and minerals from soil?','Root'],
+      ['Which organ is the main site of absorption of digested nutrients?','Small intestine']
+    ]},
+    {id:'physics',name:'Physics',short:'Force, light & motion',icon:'physics',rgb:'20,104,218',qs:[
+      ['Which quantity has both magnitude and direction?','Displacement'],
+      ['Which force keeps a satellite moving around Earth?','Gravitational force'],
+      ['Which standard unit of temperature is commonly used in school science?','Degree Celsius'],
+      ['What is the SI unit of mass?','Kilogram'],
+      ['Liquid pressure generally increases with ______.','Depth'],
+      ['What is the SI unit of volume?','Cubic metre (m³)'],
+      ['What is the value of acceleration due to gravity on the surface of Earth?','9.8 m/s²'],
+      ['Who invented the light bulb?','Thomas Alva Edison']
+    ]},
+    {id:'chemistry',name:'Chemistry',short:'Matter & reactions',icon:'chemistry',rgb:'214,99,42',qs:[
+      ['Which gas makes up the largest part of Earth’s atmosphere?','Nitrogen (about 78%)'],
+      ['Which gas is essential for aerobic respiration?','Oxygen'],
+      ['Which process changes water vapour into liquid water?','Condensation'],
+      ['Which instrument records earthquake vibrations?','Seismograph'],
+      ['Which method can separate insoluble solid particles from a liquid?','Filtration'],
+      ['Which element is found in all organic compounds?','Carbon'],
+      ['What is the common name of sodium chloride?','Salt'],
+      ['Which gas is a major greenhouse gas released by burning fossil fuels?','Carbon dioxide']
+    ]},
+    {id:'audio-visual',name:'Audio Visual',short:'Observe & identify',icon:'visual',rgb:'130,75,188',qs:[
+      ['Identify the given celestial bodies.','Constellations',{img:'images/junior-av-constellations.jpg',alt:'Diagram of zodiac constellations in the night sky'}],
+      ['Which organism is shown moving in the video?','Paramecium moving',{kind:'paramecium',url:'https://www.facebook.com/100063786273835/videos/paramesium/1009712025433879/'}],
+      ['Which circuit is shown in the diagram?','Open circuit',{img:'images/junior-av-open-circuit.png',alt:'Battery and light bulb connected with a gap in the circuit'}],
+      ['What process is shown in the diagram?','Distillation',{img:'images/junior-av-distillation.png',alt:'Laboratory distillation apparatus'}],
+      ['In which phylum does this organism belong?','Echinodermata',{img:'images/junior-av-starfish.png',alt:'A starfish on the seabed'}],
+      ['Identify the material shown.','pH scale and pH paper',{img:'images/junior-av-ph-scale.png',alt:'pH test paper and colour scale'}],
+      ['What is the functional unit of the nervous system?','The neuron',{img:'images/junior-av-neuron.png',alt:'Labelled diagram of a neuron'}],
+      ['Identify the organism.','Hydra',{img:'images/junior-av-hydra.png',alt:'Hydra specimen with tentacles'}]
+    ]},
+    {id:'gambling',name:'Lucky Dip',short:'A surprise science mix',icon:'gambling',rgb:'205,48,71',qs:[
+      ['Which material is commonly used to make electric wires?','Copper'],
+      ['Which state of matter has neither a fixed shape nor a fixed volume?','Gas'],
+      ['Which particle in an atom has a positive charge?','Proton'],
+      ['Why are lubricants used in machines?','To reduce friction'],
+      ['If the same force acts on half the area, the pressure becomes ______.','Double'],
+      ['Which lens converges parallel rays of light?','Convex lens'],
+      ['Which instrument measures electric current?','Ammeter'],
+      ['What is the value of 0 Kelvin in degrees Celsius?','−273 °C'],
+      ['Which animal’s milk has the highest amount of sugar?','Elephant'],
+      ['Which process allows organisms to obtain energy from food?','Respiration'],
+      ['Which organ removes many dissolved wastes from the blood?','Kidney'],
+      ['Stored energy in an object is called ______.','Potential energy']
+    ]},
+    {id:'geo-astro',name:'Geology & Astronomy',short:'Earth & beyond',icon:'astronomy',rgb:'11,126,153',qs:[
+      ['Which planet is famous for its prominent ring system?','Saturn'],
+      ['Which event occurs when Earth comes between the Sun and Moon?','Lunar eclipse'],
+      ['Which type of soil is best for growing crops?','Loamy soil'],
+      ['Which is the largest planet in the Solar System?','Jupiter'],
+      ['What is the name of the galaxy that contains our Solar System?','Milky Way Galaxy'],
+      ['Which process returns water to Earth’s surface from clouds?','Precipitation'],
+      ['Which type of rock is formed when molten magma or lava cools and becomes solid?','Igneous rock'],
+      ['What is molten rock called when it is beneath Earth’s surface?','Magma']
+    ]},
+    {id:'misc',name:'Miscellaneous',short:'Across science',icon:'misc',rgb:'113,94,66',qs:[
+      ['What is the first method of scientific learning?','Observation'],
+      ['Which layer of Earth is where we live?','Crust'],
+      ['Which colour of visible light has the longest wavelength?','Red'],
+      ['A pencil partly immersed in water appears bent because of ______.','Refraction'],
+      ['Which device converts electrical energy into light energy?','Electric bulb'],
+      ['Which energy is produced by moving air?','Wind energy'],
+      ['Which is the oldest national park of Nepal?','Chitwan National Park'],
+      ['What is the full form of PDF?','Portable Document Format']
+    ]},
+    {id:'rapid',name:'Rapid Fire',short:'Sets A, B, C & D together',icon:'rapid',rgb:'230,112,19',rapid:true,qs:[
+      ['What is the hardest tissue in the human body?','Tooth enamel',{set:'A',number:1}],
+      ['Which energy is produced by moving air?','Wind energy',{set:'A',number:2}],
+      ['Which source provides solar energy?','The Sun',{set:'A',number:3}],
+      ['Which phenomenon mainly causes sea breeze during the daytime?','Convection',{set:'A',number:4}],
+      ['Pressure is calculated as ______.','Force ÷ area',{set:'A',number:5}],
+      ['Which vitamin is commonly associated with sunlight exposure?','Vitamin D',{set:'B',number:1}],
+      ['Which planet is known as the Red Planet?','Mars',{set:'B',number:2}],
+      ['Which is the outermost solid layer of Earth?','Crust',{set:'B',number:3}],
+      ['Which organelle in a cell is responsible for photosynthesis?','Chloroplast',{set:'B',number:4}],
+      ['Which vitamin is most easily destroyed during cooking?','Vitamin C',{set:'B',number:5}],
+      ['Which part of an atom has no charge?','Neutron',{set:'C',number:1}],
+      ['Which chemical is commonly used to make soap alkaline?','Sodium hydroxide',{set:'C',number:2}],
+      ['What is the phylum of Sycon?','Porifera',{set:'C',number:3}],
+      ['Which mineral is important for strong bones and teeth?','Calcium',{set:'C',number:4}],
+      ['What is the formula for density?','Mass ÷ volume',{set:'C',number:5}],
+      ['What is the scientific name of humans?','Homo sapiens',{set:'D',number:1}],
+      ['Which acid is produced in the stomach?','Hydrochloric acid (HCl)',{set:'D',number:2}],
+      ['Which poles of two magnets repel each other?','Like poles',{set:'D',number:3}],
+      ['Which teeth are mainly used for grinding food?','Molars',{set:'D',number:4}],
+      ['The SI unit of force is ______.','Newton',{set:'D',number:5}]
+    ]}
+  ];
+  const seniorRounds=[{"id":"senior-biology","name":"Biology","short":"Living systems","icon":"biology","rgb":"16,142,107","qs":[["Which blood vessel carries oxygenated blood from lungs to the heart?","Pulmonary vein"],["Which brain chemical is often nicknamed the 'feel good' chemical?","Dopamine"],["Which is the largest internal organ in the human body?","Liver"],["What is the name of the process in which plants release water vapour into the air?","Transpiration"],["Where are RBC formed?","In bone marrow"],["Animals of which phylum contains hollow body cavity?","Coelenterata"],["Who first crystallized tobacco mosaic virus (TMV)?","Wendell M. Stanley"],["Which cell organelle is called traffic police of the cell?","Golgi body"]]},{"id":"senior-physics","name":"Physics","short":"Force, energy & motion","icon":"physics","rgb":"20,104,218","qs":[["Which particle mainly carries electric current through a metal wire?","Electron"],["Hot water of mass 10 kg at 100°C is mixed with 20 kg water at 10°C. What is the final temperature of water?","40°C"],["The time period of a simple pendulum is 2 seconds. Find its frequency.","0.5 Hz"],["Which principle says that up thrust is equal to the weight of the displaced liquid?","Archimedes' Principle"],["What type of wire is indicated by blue or black colour in household electrical wiring?","Neutral wire"],["What is the value of angle of dip at the north pole?","90°"],["What is the pressure exerted by the water at the depth of 20 m assuming acceleration due to gravity is 10 m/s²?","200000 Pa"],["What happens to the mass of a body when it is taken to the moon?","Remains same"]]},{"id":"senior-chemistry","name":"Chemistry","short":"Matter & reactions","icon":"chemistry","rgb":"214,99,42","qs":[["What is the full form of pH?","Potential of Hydrogen or Power of Hydrogen"],["Approximately how many times heavier is a proton than an electron?","1836 times"],["What is the symbol of tin?","Sn"],["What happens when an alkaline solution is treated with phenolphthalein?","Turns into pink colour"],["Which gas is produced when vinegar reacts with baking soda?","CO2"],["What is the molecular formula of caustic soda?","NaOH"],["What is the only non-metal that is liquid at room temperature?","Bromine"],["If an atom loses an electron, what does it become?","A cation"]]},{"id":"senior-geology","name":"Geology and Astronomy","short":"Earth & beyond","icon":"astronomy","rgb":"11,126,153","qs":[["What is the first plant sown on the moon?","Cotton"],["What is the most abundant mineral found in the earth's crust?","Feldspar"],["Dinosaurs are the evolutionary ancestors of what modern day animals?","Birds"],["In which planet days are longer than years?","Venus"],["What is the point directly above an earthquake's focus called?","Epicenter"],["Which is the shortest night in a year?","21st June"],["What is the weight of NepaliSat 1?","1.3 Kg"],["If the earth suddenly stops rotating, which direction would objects tend to move?","Eastward (due to inertia of motion)"]]},{"id":"senior-misc","name":"Miscellaneous","short":"Across science & technology","icon":"misc","rgb":"113,94,66","qs":[["How much is one astronomical unit?","1.5 × 10¹¹ m OR 15 crore Km"],["What is the collection of related files stored together called?","Folder"],["What is the main function of ribosome?","Protein synthesis"],["Which element has the highest electrical conductivity at room temperature?","Silver (Ag)"],["Which memory loses its data when power is switched off?","RAM"],["What is the main greenhouse gas responsible for the natural greenhouse effect on the Earth?","Water vapour"],["Which hormone helps kidney to reabsorb water back from urine into blood stream?","Vasopressin or anti-diuretic hormone"],["Which division of the kingdom plantae includes moss and riccia?","Bryophyta"]]},{"id":"senior-audiovisual","name":"Audio Visual","short":"Observe, identify & explain","icon":"visual","rgb":"130,75,188","qs":[["Identify the picture.","Conical Flask",{"img":"images/av-conical-flask.jpg","alt":"Senior audio visual quiz image"}],["Picture: Fire Extinguisher — What are two reactants in this device?","NaHCO3 and H2SO4",{"placeholder":"Image placeholder"}],["Which method of artificial vegetative propagation is shown in the video? (Video of pomato: https://youtube.com/shorts/CaGKJ1UKEh8?si=0J6qnaf972X73cyA)","Grafting",{"placeholder":"Video placeholder"}],["Identify the cause of this event.","Anomalous expansion of water",{"img":"images/av-frozen-pipe.jpg","alt":"Senior audio visual quiz image"}],["What microscopic observation is shown in the picture?","TS of gills of mushroom",{"img":"images/av-mushroom-gills.jpg","alt":"Senior audio visual quiz image"}],["Identify the logo.","Wikipedia",{"img":"images/av-wikipedia-logo.jpg","alt":"Senior audio visual quiz image"}],["Identify the experiment.","Ammonia gas preparation",{"img":"images/av-ammonia-prep.jpg","alt":"Senior audio visual quiz image"}],["Identify the famous Robot.","Sophia",{"img":"images/av-sophia-robot.jpg","alt":"Senior audio visual quiz image"}],["Last question for Audience: According to the lyrics (Periodic Table song, play first 30 sec), which element is mentioned for your pretty teeth?","Fluorine",{"placeholder":"Video placeholder"}]]},{"id":"senior-rapidfire","name":"Rapid Fire","short":"Sets A, B, C & D together","icon":"rapid","rgb":"230,112,19","qs":[["What is the neutron number of silicon?","14",{"set":"A","number":1}],["What happens when ammonia reacts with carbon dioxide?","Urea formation",{"set":"A","number":2}],["What is the SI unit of electric charge?","Coulomb",{"set":"A","number":3}],["What is the full form of VPN?","Virtual Private Network",{"set":"A","number":4}],["Who discovered electromagnetic induction?","Faraday",{"set":"A","number":5}],["What is the scientific name of dog?","Canis familiaris",{"set":"A","number":6}],["What is the phylum of sycon?","Porifera",{"set":"A","number":7}],["What happens to the resistance of a metal conductor when its temperature increases?","Increases",{"set":"A","number":8}],["Which hormone promotes dormancy and aging responses in plants?","Abscisic acid",{"set":"A","number":9}],["What type of bond is formed by transfer of electrons?","Ionic bond",{"set":"A","number":10}],["What is the neutron number of sulfur-32?","16",{"set":"B","number":1}],["What happens when carbon dioxide reacts with lime water for short period of time?","CaCO3 formation",{"set":"B","number":2}],["What is the SI unit of specific heat capacity?","J/Kg°C",{"set":"B","number":3}],["What is the full form of HTML?","Hypertext markup language",{"set":"B","number":4}],["Which device is used to measure the density of milk?","Lactometer",{"set":"B","number":5}],["What is the scientific name of rice?","Oryza sativa",{"set":"B","number":6}],["What is the phylum of pinworm?","Nemathelminthes",{"set":"B","number":7}],["What is the weight of human brain?","1.35 Kg",{"set":"B","number":8}],["Why does a person feel lighter in an elevator?","Accelerating downwards",{"set":"B","number":9}],["Which is the strongest evidence of evolution?","Fossils",{"set":"B","number":10}],["What is the valency of phosphorus?","3",{"set":"C","number":1}],["What happens when ammonia reacts with water?","Forms ammonium hydroxide",{"set":"C","number":2}],["What is the SI unit of gravitational constant?","Nm²/Kg²",{"set":"C","number":3}],["What is the full form of HTTP?","Hypertext transfer protocol",{"set":"C","number":4}],["What is the value of absolute zero in degree Celsius?","-273.15°C",{"set":"C","number":5}],["What is the scientific name of potato?","Solanum tuberosum",{"set":"C","number":6}],["What is the phylum of nereis?","Annelida",{"set":"C","number":7}],["Which hormone helps in elongation of stem in plants?","Gibberellin",{"set":"C","number":8}],["What happens to the boiling point of water at higher altitude?","Decreases",{"set":"C","number":9}],["What does CT stand for in medical imaging?","Computed tomography",{"set":"C","number":10}],["What is the atomic mass of aluminum?","27 amu",{"set":"D","number":1}],["What happens when a burning magnesium ribbon is exposed to carbon dioxide?","MgO forms with carbon patches",{"set":"D","number":2}],["What is the SI unit of luminous intensity?","Candela",{"set":"D","number":3}],["What is the full form of SSD?","Solid State Drive",{"set":"D","number":4}],["Which device measures liquid pressure?","Pressure gauge / manometer",{"set":"D","number":5}],["What is the scientific name of cow?","Bos taurus",{"set":"D","number":6}],["What is the phylum of unio?","Mollusca",{"set":"D","number":7}],["What is the weight of pituitary gland?","1.5 grams",{"set":"D","number":8}],["What happens when an object cannot displace water equal to its weight?","Object will sink",{"set":"D","number":9}],["What is called the hybrid made from male horse and female donkey?","Hinny",{"set":"D","number":10}]],"rapid":true},{"id":"senior-gambling","name":"Gambling","short":"Gold, Diamond & Platinum","icon":"gambling","rgb":"205,48,71","qs":[["What is the SI unit of resistance?","Ohm",{"tier":"Gold","marks":5,"number":1}],["What is the molecular formula of quick lime?","CaO",{"tier":"Gold","marks":5,"number":2}],["Which part of brain balances body movement and postures?","Cerebellum",{"tier":"Gold","marks":5,"number":3}],["What is the process called when solid directly changes into gas?","Sublimation",{"tier":"Gold","marks":5,"number":4}],["Which material is used to shield against radiation?","Lead (Pb)",{"tier":"Diamond","marks":10,"number":1}],["Which human organ uses the most oxygen?","Brain",{"tier":"Diamond","marks":10,"number":2}],["What is the scientific name of titepati?","Artemisia vulgaris",{"tier":"Diamond","marks":10,"number":3}],["What is the escape velocity of the Earth?","11.2 km/s",{"tier":"Diamond","marks":10,"number":4}],["Calculate the molecular weight of slaked lime.","74 g/mol or 74 amu",{"tier":"Platinum","marks":15,"number":1}],["What is the name of the satellite developed by Nepali secondary school students that was launched in January 2026?","Munal",{"tier":"Platinum","marks":15,"number":2}],["What is the focal length of plane mirror?","Infinity",{"tier":"Platinum","marks":15,"number":3}],["Which scientist proposed the heliocentric model of the solar system?","Nicolaus Copernicus",{"tier":"Platinum","marks":15,"number":4}]],"tiered":true}];
+  const quizBanks={junior:juniorRounds,senior:seniorRounds};
+
+  const screens={entry:document.getElementById('entry'),levels:document.getElementById('levels'),rounds:document.getElementById('rounds'),menu:document.getElementById('menu'),question:document.getElementById('question')};
+  const app=document.getElementById('app'), roundGrid=document.getElementById('roundGrid'), numberGrid=document.getElementById('numberGrid');
+  let activeLevel="junior",rounds=quizBanks.junior,currentRound=null,currentIndex=0,seconds=60,timer=null,running=false,audioCtx=null;
+  let rapidSetIndices=[],rapidPosition=-1;
+  const viewed={};
+  const circumference=2*Math.PI*76, progress=document.getElementById('timerProgress');
+  progress.style.strokeDasharray=circumference;progress.style.strokeDashoffset=0;
+
+  function show(name){Object.values(screens).forEach(s=>s.classList.remove('active'));screens[name].classList.add('active');window.scrollTo(0,0)}
+  function setTheme(round){const rgb=round?round.rgb:'11,116,207';app.style.setProperty('--round-rgb',rgb)}
+  function selectLevel(level){activeLevel=level;rounds=quizBanks[level];currentRound=null;stopTimer();setTheme(null);document.getElementById('competitionLabel').textContent=(level==='senior'?'Senior':'Junior')+' competition';const count=rounds.reduce((sum,round)=>sum+round.qs.length,0);document.getElementById('questionTotal').textContent=count+' questions';document.getElementById('roundTotal').textContent=rounds.length+' round groups in total';makeRoundCards();show('rounds')}
+  function ensureAudio(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
+  function tickSound(){if(!audioCtx||audioCtx.state!=='running')return;const now=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(1050,now);o.frequency.exponentialRampToValueAtTime(760,now+.035);g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.075,now+.004);g.gain.exponentialRampToValueAtTime(.0001,now+.055);o.connect(g);g.connect(audioCtx.destination);o.start(now);o.stop(now+.06)}
+  function buzzerSound(){if(!audioCtx||audioCtx.state!=='running')return;const now=audioCtx.currentTime,duration=.9,carrier=audioCtx.createOscillator(),mod=audioCtx.createOscillator(),modGain=audioCtx.createGain(),gain=audioCtx.createGain();carrier.type='sawtooth';carrier.frequency.setValueAtTime(115,now);carrier.frequency.linearRampToValueAtTime(88,now+duration);mod.type='square';mod.frequency.value=24;modGain.gain.value=.085;gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.2,now+.02);gain.gain.setValueAtTime(.2,now+duration-.12);gain.gain.exponentialRampToValueAtTime(.0001,now+duration);mod.connect(modGain);modGain.connect(gain.gain);carrier.connect(gain);gain.connect(audioCtx.destination);carrier.start(now);mod.start(now);carrier.stop(now+duration);mod.stop(now+duration)}
+  function stopTimer(){if(timer){clearInterval(timer);timer=null}running=false}
+  function renderTimer(){document.getElementById('timeValue').textContent=seconds;progress.style.strokeDashoffset=circumference*(1-seconds/60);progress.classList.toggle('warning',seconds<=10);document.getElementById('stage').classList.toggle('timeup',seconds===0);const state=document.getElementById('timerState');state.textContent=seconds===0?'Time is up':running?'Timer running':'Timer paused';state.classList.toggle('done',seconds===0);document.getElementById('timerBtnText').textContent=running?'Pause':'Resume'}
+  function startTimer(reset){if(reset)seconds=60;stopTimer();running=true;renderTimer();timer=setInterval(()=>{seconds--;if(seconds<=0){seconds=0;stopTimer();buzzerSound()}else{tickSound()}renderTimer()},1000)}
+  function toggleTimer(){if(seconds===0){startTimer(true);return}if(running){stopTimer();renderTimer()}else{startTimer(false)}}
+
+  function makeRoundCards(){roundGrid.innerHTML='';rounds.forEach(round=>{const b=document.createElement('button');b.className='round-card';b.style.setProperty('--accent-rgb',round.rgb);b.innerHTML='<span class="round-count">'+round.qs.length+' Q</span><span class="round-icon">'+icons[round.icon]+'</span><h3>'+round.name+'</h3><p>'+round.short+'</p>';b.addEventListener('click',()=>openMenu(round));roundGrid.appendChild(b)})}
+  function openMenu(round){stopTimer();currentRound=round;rapidSetIndices=[];rapidPosition=-1;setTheme(round);document.getElementById('menuTitle').textContent=round.name;document.getElementById('menuLede').textContent=round.rapid?'Select a set.':'The timer starts when a question opens.';document.getElementById('asideTitle').textContent=round.name;document.getElementById('asideCopy').textContent=round.rapid?'Choose Set A, B, C, or D. Use the right arrow to reveal each question.':round.short+'. Pick any bright number to reveal the question.';document.getElementById('asideIcon').innerHTML=icons[round.icon];renderNumbers();show('menu')}
+  function openRapidSet(setName){stopTimer();if(document.activeElement)document.activeElement.blur();rapidSetIndices=currentRound.qs.map((q,i)=>(q[2]||{}).set===setName?i:-1).filter(i=>i>=0);rapidPosition=-1;currentIndex=rapidSetIndices[0]||0;const stage=document.getElementById('stage');stage.classList.add('rapid-mode','rapid-wait');stage.classList.remove('rapid-answers');document.getElementById('qRound').textContent=currentRound.name+' · Set '+setName;document.getElementById('qNumber').textContent='Press → to begin';document.getElementById('questionLabel').textContent='Questions';document.getElementById('questionText').textContent='';document.getElementById('rapidQuestionList').innerHTML='';document.getElementById('rapidAnswerList').innerHTML='';document.getElementById('visualWrap').innerHTML='';document.getElementById('visualWrap').classList.remove('show');document.getElementById('answerPanel').classList.remove('show');document.getElementById('answerBtnText').textContent='Show all answers';document.getElementById('prevBtn').disabled=true;document.getElementById('nextBtn').disabled=rapidSetIndices.length===0;seconds=60;renderTimer();show('question')}
+  function renderNumbers(){numberGrid.innerHTML='';numberGrid.classList.remove('rapid-grid','rapid-set-grid');if(currentRound.rapid){numberGrid.classList.add('rapid-set-grid');const sets=[...new Set(currentRound.qs.map(q=>(q[2]||{}).set).filter(Boolean))];sets.forEach((setName,setIndex)=>{const count=currentRound.qs.filter(q=>(q[2]||{}).set===setName).length;const b=document.createElement('button');b.className='rapid-set';b.style.setProperty('--tile-rgb',['230,112,19','130,75,188','16,142,107','20,104,218'][setIndex%4]);b.setAttribute('aria-label','Open Rapid Fire Set '+setName);b.innerHTML='<strong>Set '+setName+'</strong><span>'+count+' questions</span>';b.addEventListener('click',()=>{ensureAudio();openRapidSet(setName)});numberGrid.appendChild(b)});return}let lastSet='';currentRound.qs.forEach((q,i)=>{const meta=q[2]||{};const group=meta.tier||'';if(group&&group!==lastSet){const heading=document.createElement('div');heading.className='set-heading';heading.textContent=meta.tier+' · '+meta.marks+' marks';numberGrid.appendChild(heading);lastSet=group}const b=document.createElement('button');b.className='q-number'+(viewed[currentRound.id+'-'+i]?' viewed':'');const displayNumber=meta.number||i+1;const groupLabel=meta.tier||'';const label=groupLabel?groupLabel+', question '+displayNumber:'Question '+displayNumber;b.setAttribute('aria-label','Open '+label);b.innerHTML='<strong>'+String(displayNumber).padStart(2,'0')+'</strong><span>'+(groupLabel||'Question')+'</span>';b.addEventListener('click',()=>{ensureAudio();openQuestion(i)});numberGrid.appendChild(b)})}
+  function renderVisual(meta){const wrap=document.getElementById('visualWrap');wrap.innerHTML='';wrap.classList.remove('show');if(!meta)return;let hasVisual=false;if(meta.img){const img=document.createElement('img');img.src=meta.img;img.alt='Quiz image for identification';img.dataset.revealAlt=meta.alt||'Quiz image';wrap.appendChild(img);hasVisual=true}else if(meta.placeholder){const p=document.createElement('div');p.className='visual-placeholder';p.textContent=meta.placeholder+' — add media manually';wrap.appendChild(p);hasVisual=true}else if(meta.kind==='paramecium'){const v=document.createElement('div');v.className='paramecium';v.setAttribute('role','img');v.setAttribute('aria-label','Quiz animation for identification');v.dataset.revealAlt='Stylised microscope view of a moving paramecium';wrap.appendChild(v);if(meta.url){const a=document.createElement('a');a.href=meta.url;a.target='_blank';a.rel='noopener';a.className='visual-source';a.textContent='Open source video ↗';wrap.appendChild(a)}hasVisual=true}if(hasVisual)wrap.classList.add('show')}
+  function renderRapidQuestions(){const list=document.getElementById('rapidQuestionList');list.innerHTML='';rapidSetIndices.slice(0,rapidPosition+1).forEach((index,position)=>{const item=document.createElement('article');item.className='rapid-question';const number=document.createElement('span');number.className='rapid-number';number.textContent=position+1;const text=document.createElement('p');text.textContent=currentRound.qs[index][0];item.append(number,text);list.appendChild(item)})}
+  function renderRapidAnswers(){const list=document.getElementById('rapidAnswerList');list.innerHTML='';rapidSetIndices.forEach((index,position)=>{const q=currentRound.qs[index],item=document.createElement('article');item.className='rapid-answer-item';const question=document.createElement('div');question.className='rapid-q';const number=document.createElement('b');number.textContent=(position+1)+'.';const text=document.createElement('span');text.textContent=q[0];question.append(number,text);const answer=document.createElement('p');answer.className='rapid-a';answer.textContent='Answer: '+q[1];item.append(question,answer);list.appendChild(item)})}
+  function openQuestion(index){currentIndex=index;if(currentRound.rapid&&rapidSetIndices.length){rapidPosition=rapidSetIndices.indexOf(index);viewed[currentRound.id+'-'+index]=true;const q=currentRound.qs[index],meta=q[2]||{},stage=document.getElementById('stage');stage.classList.add('rapid-mode');stage.classList.remove('rapid-wait','rapid-answers');document.getElementById('qRound').textContent=currentRound.name+' · Set '+meta.set;document.getElementById('qNumber').textContent='Question '+meta.number+' of '+rapidSetIndices.length;document.getElementById('questionLabel').textContent='Questions revealed';document.getElementById('answerBtnText').textContent='Show all answers';renderRapidQuestions();document.getElementById('prevBtn').disabled=rapidPosition===0;document.getElementById('nextBtn').disabled=rapidPosition===rapidSetIndices.length-1;show('question');if(rapidPosition===0&&!running&&seconds===60)startTimer(true);else renderTimer();return}viewed[currentRound.id+'-'+index]=true;const q=currentRound.qs[index],meta=q[2]||{},stage=document.getElementById('stage');stage.classList.remove('rapid-wait','rapid-mode','rapid-answers');document.getElementById('questionLabel').textContent='Question';document.getElementById('rapidQuestionList').innerHTML='';document.getElementById('rapidAnswerList').innerHTML='';document.getElementById('qRound').textContent=currentRound.name+(meta.tier?' · '+meta.tier:'');document.getElementById('qNumber').textContent=meta.tier?'Question '+meta.number+' of 4 · '+meta.marks+' marks':'Question '+(index+1)+' of '+currentRound.qs.length;document.getElementById('questionText').textContent=q[0];document.getElementById('answerText').textContent=q[1];document.getElementById('answerPanel').classList.remove('show');document.getElementById('answerBtnText').textContent='Show answer';renderVisual(q[2]);document.getElementById('prevBtn').disabled=index===0;document.getElementById('nextBtn').disabled=index===currentRound.qs.length-1;show('question');startTimer(true)}
+  function stepQuestion(direction){if(currentRound.rapid&&rapidSetIndices.length){const nextPosition=rapidPosition+direction;if(nextPosition>=0&&nextPosition<rapidSetIndices.length)openQuestion(rapidSetIndices[nextPosition]);return}const nextIndex=currentIndex+direction;if(nextIndex>=0&&nextIndex<currentRound.qs.length)openQuestion(nextIndex)}
+  function goEntry(){stopTimer();setTheme(null);screens.entry.classList.remove('opening');show('entry')}
+  function toggleAnswer(){const stage=document.getElementById('stage');if(currentRound&&currentRound.rapid&&stage.classList.contains('rapid-mode')){const open=!stage.classList.contains('rapid-answers');stage.classList.toggle('rapid-answers',open);stage.classList.toggle('rapid-wait',!open&&rapidPosition<0);if(open){stopTimer();renderTimer();renderRapidAnswers();document.getElementById('questionLabel').textContent='Questions & answers';document.getElementById('qNumber').textContent='All '+rapidSetIndices.length+' questions';document.getElementById('answerBtnText').textContent='Hide all answers'}else{document.getElementById('questionLabel').textContent=rapidPosition<0?'Questions':'Questions revealed';document.getElementById('qNumber').textContent=rapidPosition<0?'Press → to begin':'Question '+(rapidPosition+1)+' of '+rapidSetIndices.length;document.getElementById('answerBtnText').textContent='Show all answers'}return}const p=document.getElementById('answerPanel'),open=p.classList.toggle('show');document.getElementById('answerBtnText').textContent=open?'Hide answer':'Show answer';document.querySelectorAll('#visualWrap [data-reveal-alt]').forEach(el=>{const text=open?el.dataset.revealAlt:'Quiz image for identification';if(el.tagName==='IMG')el.alt=text;else el.setAttribute('aria-label',text)})}
+  function showSticker(){const stickers=['🤫','😄','🤩','🥳','🎉','😂','🙌','😮','😎','🧠','🔬','⭐','👏','🙈','😢'];const el=document.createElement('span');el.className='fun-sticker';el.textContent=stickers[Math.floor(Math.random()*stickers.length)];el.style.setProperty('--x',(18+Math.random()*64)+'%');el.style.setProperty('--y',(28+Math.random()*42)+'%');document.getElementById('stickerLayer').appendChild(el);setTimeout(()=>el.remove(),1400)}
+
+  document.getElementById('enterBtn').addEventListener('click',()=>{ensureAudio();screens.entry.classList.add('opening');setTimeout(()=>{screens.entry.classList.remove('opening');show('levels')},900)});
+  document.querySelectorAll('[data-go-entry]').forEach(b=>b.addEventListener('click',goEntry));
+  document.getElementById('juniorBtn').addEventListener('click',()=>selectLevel('junior'));
+  document.getElementById('seniorBtn').addEventListener('click',()=>selectLevel('senior'));
+  document.getElementById('backLevels').addEventListener('click',()=>{stopTimer();setTheme(null);show('levels')});
+  document.getElementById('backRounds').addEventListener('click',()=>{stopTimer();setTheme(null);show('rounds')});
+  document.getElementById('backMenu').addEventListener('click',()=>{stopTimer();renderNumbers();show('menu')});
+  document.getElementById('timerBtn').addEventListener('click',()=>{ensureAudio();toggleTimer()});
+  document.getElementById('restartBtn').addEventListener('click',()=>{ensureAudio();startTimer(true)});
+  document.getElementById('answerBtn').addEventListener('click',toggleAnswer);
+  document.getElementById('prevBtn').addEventListener('click',()=>stepQuestion(-1));
+  document.getElementById('nextBtn').addEventListener('click',()=>stepQuestion(1));
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.target.matches('input,textarea,select')){e.preventDefault();showSticker();return}if(e.target.matches('button,a,input,textarea,select')||!screens.question.classList.contains('active'))return;if(e.key.toLowerCase()==='a')toggleAnswer();else if(e.key.toLowerCase()==='r'&&!document.getElementById('stage').classList.contains('rapid-wait'))startTimer(true);else if(e.key==='Escape'){stopTimer();renderNumbers();show('menu')}else if(e.key==='ArrowLeft')stepQuestion(-1);else if(e.key==='ArrowRight')stepQuestion(1)},true);
+  makeRoundCards();
+})();
+</script>
+</body>
+</html>
