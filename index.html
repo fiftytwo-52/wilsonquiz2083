@@ -463,11 +463,11 @@
   function revealQuestionText(){if(questionRevealTimer){clearInterval(questionRevealTimer);questionRevealTimer=null}const hint=document.getElementById('questionRevealHint'),qt=document.getElementById('questionText'),ab=document.getElementById('answerBtn');if(hint)hint.classList.remove('show');if(qt)qt.classList.remove('question-hidden');if(ab)ab.disabled=false}
   const circumference=2*Math.PI*76, progress=document.getElementById('timerProgress');
   progress.style.strokeDasharray=circumference;progress.style.strokeDashoffset=0;
-  const suspenseMusic=document.getElementById('suspenseMusic');let musicMuted=false;
+  const suspenseMusic=document.getElementById('suspenseMusic');if(suspenseMusic)suspenseMusic.volume=0.55;let musicMuted=false;
   function isAVRound(){return !!currentRound&&(currentRound.id==='senior-audiovisual'||currentRound.id==='junior-audiovisual')}
-  function syncMusic(){if(musicMuted||!suspenseMusic)return;try{const shouldPlay=screens.question.classList.contains('active')&&!isAVRound();if(shouldPlay){suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{})}else{suspenseMusic.pause()}}catch(e){}}
+  function syncMusic(){if(musicMuted||!suspenseMusic)return;try{const avQuestion=screens.question.classList.contains('active')&&isAVRound();if(avQuestion){suspenseMusic.pause()}else{suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{})}}catch(e){}}
   function toggleMusic(){musicMuted=!musicMuted;if(musicMuted){try{suspenseMusic.pause()}catch(e){}}else{syncMusic()}}
-  function unlockMusic(){if(musicMuted||!suspenseMusic)return;try{suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+  function unlockMusic(){syncMusic()}
 
   function show(name){Object.values(screens).forEach(s=>s.classList.remove('active'));screens[name].classList.add('active');window.scrollTo(0,0);syncMusic()}
   function setTheme(round){const rgb=round?round.rgb:'11,116,207';app.style.setProperty('--round-rgb',rgb)}
