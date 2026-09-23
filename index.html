@@ -44,31 +44,85 @@
     .screen.active{display:flex}
     @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-    /* Entry */
-    #entry{align-items:center;justify-content:center;padding:clamp(12px,2.5vw,32px);text-align:center;background:linear-gradient(150deg,#dff5ff 0%,#bfe8ff 48%,#dff9ee 100%);color:var(--ink);isolation:isolate}
-    #entry:after{content:"";position:absolute;inset:0;z-index:-2;background-image:radial-gradient(circle,rgba(9,103,192,.16) 2px,transparent 2px),linear-gradient(rgba(255,255,255,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.28) 1px,transparent 1px);background-size:32px 32px,64px 64px,64px 64px;animation:gridMove 18s linear infinite}
-    .curtain{position:absolute;inset-block:0;width:51%;z-index:-1;background:
-      radial-gradient(circle at 22px 22px,rgba(255,214,90,.7) 0 5px,transparent 6px),
-      repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 8%,rgba(4,60,132,.08) 11% 17%),
-      linear-gradient(145deg,#52b7f3,#1782d4 70%,#0c67ba);background-size:44px 44px,auto,auto;box-shadow:inset 0 0 55px rgba(6,74,145,.22);transition:transform 1.15s cubic-bezier(.75,0,.2,1);animation:curtainGlow 4s ease-in-out infinite alternate}
+    /* Entry — science stage behind the drape */
+    #entry{align-items:center;justify-content:center;padding:clamp(58px,9vh,110px) clamp(14px,3vw,36px) clamp(26px,5vh,54px);text-align:center;color:#eaf4ff;isolation:isolate;overflow:hidden;background:
+      radial-gradient(ellipse 95% 60% at 50% 118%,rgba(34,214,178,.34),transparent 62%),
+      radial-gradient(ellipse 75% 55% at 6% -12%,rgba(76,132,255,.4),transparent 58%),
+      radial-gradient(ellipse 62% 48% at 96% 4%,rgba(255,196,64,.26),transparent 52%),
+      linear-gradient(165deg,#071a3d 0%,#0a2c5c 46%,#06283f 78%,#041726 100%)}
+    #entry:after{content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;background-image:
+      radial-gradient(1.6px 1.6px at 30% 40%,rgba(255,255,255,.95),transparent 100%),
+      radial-gradient(1.3px 1.3px at 70% 55%,rgba(160,235,255,.9),transparent 100%),
+      radial-gradient(1.9px 1.9px at 45% 75%,rgba(255,224,140,.9),transparent 100%),
+      linear-gradient(rgba(120,220,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,220,255,.05) 1px,transparent 1px);
+      background-size:170px 170px,130px 130px,260px 260px,72px 72px,72px 72px;animation:starDrift 90s linear infinite}
+    .entry-atom{position:absolute;left:50%;top:50%;width:min(660px,84vw);aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;opacity:.8}
+    .entry-atom svg{width:100%;height:100%;animation:atomSpin 42s linear infinite;filter:drop-shadow(0 0 26px rgba(90,210,255,.35))}
+    .stage-beam{position:absolute;top:0;bottom:0;left:50%;width:9%;transform:translateX(-50%);z-index:1;pointer-events:none;filter:blur(8px);opacity:.85;background:linear-gradient(90deg,transparent 0%,rgba(255,214,90,.35) 30%,rgba(255,247,224,.95) 50%,rgba(255,214,90,.35) 70%,transparent 100%);animation:beamPulse 3.6s ease-in-out infinite;transition:width .85s cubic-bezier(.5,.05,.25,1),filter .85s ease,opacity .5s ease}
+    .stage-beam:after{content:"";position:absolute;left:44%;right:44%;top:0;bottom:0;background:#fff9e8;filter:blur(3px)}
+    .curtain{position:absolute;inset-block:0;width:47.6%;z-index:0;transition:transform .85s cubic-bezier(.5,.05,.25,1);background:
+      linear-gradient(180deg,rgba(0,0,0,.5),transparent 16%),
+      linear-gradient(180deg,transparent 76%,rgba(24,1,6,.5) 94%,rgba(14,0,3,.75)),
+      repeating-linear-gradient(90deg,rgba(0,0,0,.42) 0 3px,#5e0a13 12px,#a5172a 26px,#c73247 33px,#a5172a 40px,#5e0a13 54px,rgba(0,0,0,.42) 64px),
+      #6e0d18;box-shadow:inset 0 0 70px rgba(0,0,0,.4);animation:curtainGlow 5s ease-in-out infinite alternate}
+    .curtain:before{content:"";position:absolute;top:0;bottom:0;width:110px;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.55),transparent)}
+    .curtain:after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;pointer-events:none;background:repeating-linear-gradient(90deg,#f0c65a 0 3px,#8a6414 3px 5px,#f7dd8f 5px 7px,transparent 7px 14px),linear-gradient(180deg,rgba(30,2,6,.7) 0 9px,rgba(30,2,6,.25) 9px 100%);box-shadow:inset 0 4px 0 #c99a2b,inset 0 7px 6px rgba(0,0,0,.5)}
     .curtain.left{left:0;border-right:4px solid var(--gold);transform-origin:left}
-    .curtain.right{right:0;border-left:4px solid var(--gold);transform-origin:right;animation-delay:-2s}
-    #entry.opening .curtain.left{transform:translateX(-102%)}
-    #entry.opening .curtain.right{transform:translateX(102%)}
-    #entry.opening .entry-card{opacity:0;transform:scale(1.08);transition:.75s ease}
-    .entry-card{width:100%;min-height:calc(100dvh - clamp(24px,5vw,64px));position:relative;padding:clamp(28px,5vw,76px);border:3px solid #fff;background:rgba(255,255,255,.94);box-shadow:0 25px 70px rgba(14,93,158,.22);border-radius:34px;backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:entryCardIn .8s cubic-bezier(.2,.85,.2,1) both}
+    .curtain.left:before{right:0}
+    .curtain.right{right:0;border-left:4px solid var(--gold);transform-origin:right;animation-delay:-2.5s}
+    .curtain.right:before{left:0;background:linear-gradient(270deg,rgba(0,0,0,.55),transparent)}
+    .valance{position:absolute;top:0;left:-2%;width:104%;height:clamp(48px,7.5vh,86px);z-index:1;pointer-events:none;filter:drop-shadow(0 3px 0 #e7bb4a) drop-shadow(0 7px 0 #9a7317) drop-shadow(0 16px 18px rgba(0,0,0,.5))}
+    .valance:before{content:"";position:absolute;inset:0;background:
+      linear-gradient(180deg,rgba(255,255,255,.1),transparent 34%),
+      repeating-linear-gradient(90deg,rgba(0,0,0,.4) 0 3px,#7d1020 10px,#b82a3f 24px,#7d1020 38px,rgba(0,0,0,.4) 48px),
+      #6b0d19;
+      -webkit-mask:radial-gradient(24px 24px at 24px 100%,#0000 23px,#000 24.5px) 0 0/48px 100% repeat-x;
+      mask:radial-gradient(24px 24px at 24px 100%,#0000 23px,#000 24.5px) 0 0/48px 100% repeat-x}
+    #entry.opening .curtain.left{transform:translateX(-58%) scaleX(.42) rotate(-1.2deg)}
+    #entry.opening .curtain.right{transform:translateX(58%) scaleX(.42) rotate(1.2deg)}
+    #entry.opening .stage-beam{width:140%;opacity:1;filter:blur(30px);animation:none;transition:width .85s cubic-bezier(.5,.05,.25,1),filter .85s ease,opacity .45s .4s ease-out}
+    #entry.opening .entry-card{opacity:0;transform:scale(1.05) translateY(-18px);transition:.7s ease}
+    .entry-card{position:relative;z-index:2;width:min(860px,100%);padding:clamp(26px,5vh,52px) clamp(20px,4.5vw,60px);border:1px solid rgba(255,214,90,.55);border-radius:30px;background:linear-gradient(160deg,rgba(9,26,58,.9),rgba(6,18,40,.78) 55%,rgba(8,34,54,.86));box-shadow:0 30px 70px rgba(1,8,20,.6),inset 0 1px 0 rgba(255,255,255,.15),0 0 0 5px rgba(255,214,90,.09),0 0 60px rgba(56,190,255,.14);backdrop-filter:blur(10px) saturate(1.2);display:flex;flex-direction:column;align-items:center;animation:entryCardIn .8s cubic-bezier(.2,.85,.2,1) both}
     .entry-card:before,.entry-card:after{content:"";position:absolute;width:28px;height:28px;border:7px solid var(--gold);transform:rotate(45deg);opacity:.9;animation:diamondTurn 5s ease-in-out infinite}.entry-card:before{left:34px;top:34px}.entry-card:after{right:34px;bottom:34px;border-color:#46caa0;animation-delay:-2.5s}
-    .school-logo{width:clamp(150px,18vw,220px);max-height:210px;object-fit:contain;filter:drop-shadow(0 12px 18px rgba(20,85,135,.18));margin-bottom:24px;animation:logoFloat 3.6s ease-in-out infinite}
+    .entry-kicker{font-size:clamp(.78rem,1.5vw,1rem);font-weight:900;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:0 0 18px;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+    .crest{position:relative;padding:13px;border-radius:50%;background:radial-gradient(circle,rgba(36,120,200,.45),rgba(10,30,60,.08) 72%);box-shadow:0 0 0 3px rgba(255,214,90,.55),0 0 0 9px rgba(255,214,90,.12),0 20px 44px rgba(0,0,0,.5)}
+    .crest:after{content:"";position:absolute;inset:-12px;border-radius:50%;border:2px dashed rgba(120,225,255,.55);border-left-color:rgba(255,214,90,.75);animation:orbitSpin 16s linear infinite;pointer-events:none}
+    .school-logo{display:block;width:clamp(120px,17vh,188px);max-height:210px;object-fit:contain;filter:drop-shadow(0 12px 20px rgba(0,0,0,.45));margin:0;animation:logoFloat 3.6s ease-in-out infinite}
     h1{font-family:"Nunito",ui-rounded,sans-serif;font-weight:900;font-size:clamp(2.8rem,6.4vw,6.3rem);line-height:1;letter-spacing:-.035em;margin:12px auto 38px;max-width:940px;color:#074d91}
+    #entryTitle{margin:24px auto 14px;background:linear-gradient(180deg,#fff 22%,#cbe9ff 58%,#7fc6f8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 10px 24px rgba(70,200,255,.38))}
+    #entryTitle .year{background:linear-gradient(180deg,#fff3c9 10%,#ffd65a 55%,#e6ad20);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:yearGlow 3.2s ease-in-out infinite}
+    .entry-sub{margin:0 0 4px;color:#a7c8e8;font-size:clamp(1rem,1.7vw,1.24rem);font-weight:800}
+    .formula-row{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:2px 0 18px}
+    .formula-row span{padding:7px 15px;border-radius:999px;border:1px solid rgba(120,220,255,.4);background:rgba(20,74,132,.4);color:#c9ecff;font-size:.98rem;font-weight:800;letter-spacing:.03em;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+    .entry-deco{position:absolute;inset:0;z-index:3;pointer-events:none}
+    .entry-deco span{position:absolute;font-weight:900;line-height:1;color:rgba(255,220,120,.26);text-shadow:0 3px 14px rgba(0,0,0,.6);animation:scienceDrift 15s ease-in-out infinite}
+    .entry-deco .dc{color:rgba(140,230,255,.3)}
+    .entry-deco .d1{left:5%;top:24%;font-size:clamp(1.4rem,2.6vw,2.4rem)}
+    .entry-deco .d2{right:6%;top:19%;animation-delay:-4s}
+    .entry-deco .d3{left:9%;bottom:27%;font-size:clamp(2rem,4vw,3.4rem);animation-delay:-7s}
+    .entry-deco .d4{right:7%;bottom:23%;animation-delay:-11s}
+    .entry-deco .d5{left:4%;top:58%;animation-delay:-2s}
+    .entry-deco .d6{right:4.5%;top:55%;animation-delay:-6s}
+    .entry-deco .d7{left:15%;top:9%;font-size:clamp(1.6rem,3vw,2.6rem);animation-delay:-9s}
+    .entry-deco .d8{right:14%;bottom:11%;font-size:clamp(1.6rem,3vw,2.6rem);animation-delay:-13s}
+    @media(max-width:1100px){.entry-deco{display:none}}
     @keyframes entryCardIn{from{opacity:0;transform:scale(.94) translateY(18px)}to{opacity:1;transform:none}}
     @keyframes logoFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
     @keyframes diamondTurn{0%,100%{transform:rotate(45deg) scale(1)}50%{transform:rotate(135deg) scale(1.12)}}
     @keyframes curtainGlow{from{filter:saturate(.95) brightness(.98)}to{filter:saturate(1.12) brightness(1.05)}}
-    @keyframes gridMove{to{background-position:32px 32px,64px 64px,64px 64px}}
+    @keyframes starDrift{to{background-position:170px 340px,-130px 260px,260px -520px,72px 72px,-72px 72px}}
+    @keyframes atomSpin{to{transform:rotate(360deg)}}
+    @keyframes orbitSpin{to{transform:rotate(360deg)}}
+    @keyframes beamPulse{0%,100%{opacity:.55;transform:translateX(-50%) scaleX(1)}50%{opacity:.95;transform:translateX(-50%) scaleX(1.4)}}
+    @keyframes yearGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18) drop-shadow(0 0 14px rgba(255,214,90,.6))}}
+    @keyframes btnGlow{0%,100%{filter:none}50%{filter:drop-shadow(0 0 16px rgba(255,214,90,.55))}}
     .primary{border:0;border-radius:999px;background:linear-gradient(180deg,#ffdd6b,#ffc83f);color:#173454;font-size:clamp(1.05rem,1.8vw,1.3rem);font-weight:900;padding:16px 32px;min-height:60px;cursor:pointer;box-shadow:0 8px 0 #d49a16,0 15px 28px rgba(26,92,145,.2);transition:transform .18s,box-shadow .18s;display:inline-flex;align-items:center;gap:10px;justify-content:center}
     .primary:hover{transform:translateY(-2px);box-shadow:0 10px 0 #d49a16,0 18px 34px rgba(26,92,145,.24)}.primary:active{transform:translateY(6px);box-shadow:0 2px 0 #d49a16}
     .primary svg{width:20px;height:20px}
-    .entry-note{margin:20px 0 0;color:#587694;font-size:.9rem;font-weight:700}
+    #enterBtn{animation:btnGlow 2.8s ease-in-out infinite}
+    .entry-note{margin:22px 0 0;color:#8fb2d4;font-size:.9rem;font-weight:700}
+    .entry-note kbd{display:inline-block;padding:1px 8px;border-radius:6px;background:rgba(255,214,90,.16);border:1px solid rgba(255,214,90,.5);color:var(--gold);font-family:inherit;font-weight:900;font-size:.9rem}
 
     /* Quiz level */
     #levels{background:transparent}
@@ -229,10 +283,20 @@
 
   <section class="screen active" id="entry" aria-labelledby="entryTitle">
     <div class="curtain left"></div><div class="curtain right"></div>
+    <div class="stage-beam" aria-hidden="true"></div>
+    <div class="valance" aria-hidden="true"></div>
+    <div class="entry-atom" aria-hidden="true"><svg viewBox="0 0 240 240" fill="none"><g stroke="rgba(120,225,255,.55)" stroke-width="2.5"><ellipse cx="120" cy="120" rx="108" ry="42"/><ellipse cx="120" cy="120" rx="108" ry="42" transform="rotate(60 120 120)"/><ellipse cx="120" cy="120" rx="108" ry="42" transform="rotate(120 120 120)"/></g><circle cx="120" cy="120" r="15" fill="rgba(255,214,90,.95)"/><circle cx="120" cy="120" r="26" stroke="rgba(255,214,90,.55)" stroke-width="2.5"/><circle cx="228" cy="120" r="7" fill="rgba(140,235,255,.95)"/></svg></div>
+    <div class="entry-deco" aria-hidden="true">
+      <span class="d1">E=mc²</span><span class="d2 dc">H₂O</span><span class="d3">π</span><span class="d4 dc">F=ma</span><span class="d5">⚛</span><span class="d6 dc">O₃</span><span class="d7">⚗</span><span class="d8 dc">λ</span>
+    </div>
     <div class="entry-card">
-      <img class="school-logo" src="logo.png" alt="Wilson Academy crest">
-      <h1 id="entryTitle">Wilson Science Quiz 2083</h1>
+      <p class="entry-kicker">Wilson Academy · Inter-House Championship</p>
+      <div class="crest"><img class="school-logo" src="logo.png" alt="Wilson Academy crest"></div>
+      <h1 id="entryTitle">Wilson Science Quiz <span class="year">2083</span></h1>
+      <div class="formula-row" aria-hidden="true"><span>E=mc²</span><span>H₂O</span><span>π</span><span>F=ma</span><span>λ</span><span>O₃</span></div>
+      <p class="entry-sub">Junior &amp; Senior · 8 rounds · 181 questions</p>
       <button class="primary" id="enterBtn">Enter Quiz <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p class="entry-note">Music plays during questions — press <kbd>M</kbd> to mute anytime</p>
     </div>
   </section>
 
