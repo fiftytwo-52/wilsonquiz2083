@@ -648,6 +648,9 @@
   function setRules(open){const overlay=document.getElementById('rulesOverlay');overlay.classList.toggle('open',open);if(open)document.getElementById('closeRules').focus();else document.getElementById('rulesBtn').focus()}
 
   document.getElementById('enterBtn').addEventListener('click',()=>{ensureAudio();syncBackgroundMusic(true);screens.entry.classList.add('opening');setTimeout(()=>{screens.entry.classList.remove('opening');show('levels')},900)});
+  document.addEventListener('pointerdown',()=>syncBackgroundMusic(true),{once:true});
+  document.addEventListener('keydown',()=>syncBackgroundMusic(true),{once:true});
+  document.addEventListener('keydown',e=>{if(e.repeat)return;if(e.key.toLowerCase()==='m'&&!e.target.matches('input,textarea,select')){e.preventDefault();backgroundMusic.muted=!backgroundMusic.muted}});
   document.querySelectorAll('[data-go-entry]').forEach(b=>b.addEventListener('click',goEntry));
   document.getElementById('juniorBtn').addEventListener('click',()=>selectLevel('junior'));
   document.getElementById('seniorBtn').addEventListener('click',()=>selectLevel('senior'));
