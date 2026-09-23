@@ -467,7 +467,7 @@
   function isAVRound(){return !!currentRound&&(currentRound.id==='senior-audiovisual'||currentRound.id==='junior-audiovisual')}
   function syncMusic(){const shouldPlay=screens.question.classList.contains('active')&&!musicMuted&&!isAVRound();if(shouldPlay){suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{})}else{suspenseMusic.pause()}}
   function toggleMusic(){musicMuted=!musicMuted;if(musicMuted){suspenseMusic.pause()}else{syncMusic()}}
-  function unlockMusic(){if(musicMuted)return;try{suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}setTimeout(()=>{if(!musicMuted&&!screens.question.classList.contains('active'))suspenseMusic.pause()},50)}
+  function unlockMusic(){if(musicMuted)return;try{suspenseMusic.muted=false;const p=suspenseMusic.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}}
 
   function show(name){Object.values(screens).forEach(s=>s.classList.remove('active'));screens[name].classList.add('active');window.scrollTo(0,0);syncMusic()}
   function setTheme(round){const rgb=round?round.rgb:'11,116,207';app.style.setProperty('--round-rgb',rgb)}
@@ -567,6 +567,8 @@
   document.getElementById('nextBtn').addEventListener('click',()=>stepQuestion(1));
   document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.target.matches('input,textarea,select')){e.preventDefault();showSticker();return}if(e.target.matches('button,a,input,textarea,select')||!screens.question.classList.contains('active'))return;if(e.key.toLowerCase()==='a')toggleAnswer();else if(e.key.toLowerCase()==='m'){ensureAudio();toggleMusic()}else if(e.key.toLowerCase()==='r'&&!document.getElementById('stage').classList.contains('rapid-wait'))startTimer(true);else if(e.key==='Escape'){clearQuestionReveal();stopTimer();renderNumbers();show('menu')}else if(e.key==='ArrowLeft')stepQuestion(-1);else if(e.key==='ArrowRight')stepQuestion(1)},true);
   makeRoundCards();syncMusic();
+  document.addEventListener('pointerdown',()=>{ensureAudio();unlockMusic()});
+  document.addEventListener('keydown',()=>{ensureAudio();unlockMusic()});
 })();
 </script>
 </body>
